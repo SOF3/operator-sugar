@@ -1,0 +1,13 @@
+[package]
+name = "operator-sugar"
+version = "0.1.0"
+authors = ["SOFe <sofe2038@gmail.com>"]
+edition = "2018"
+license = "Apache-2.0"
+repository = "https://github.com/SOF3/operator-sugar.git"
+homepage = "https://github.com/SOF3/operator-sugar"
+description = "Makes operator overloading in Rust more concise and intuitive"
+categories = ["no-std"]
+
+[badges]
+travis-ci = {repository = "SOF3/operator-sugar"}
