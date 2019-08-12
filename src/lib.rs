@@ -73,7 +73,7 @@
 //! use operator_sugar::*;
 //! #[derive(Debug)] struct Left(i32);
 //! #[derive(Debug)] struct Right(i32);
-//! #[derive(Debug, Eq, PartialEq)]struct Answer(i32);
+//! #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
 //! ```
 //!
 //! ## Addition
@@ -81,7 +81,7 @@
 //! # use operator_sugar::*;
 //! # #[derive(Debug)] struct Left(i32);
 //! # #[derive(Debug)] struct Right(i32);
-//! # #[derive(Debug, Eq, PartialEq)]struct Answer(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
 //! #
 //! operator!(Left, Right: a + b -> Answer {
 //!     Answer(a.0 + b.0)
@@ -97,7 +97,7 @@
 //! # use operator_sugar::*;
 //! # #[derive(Debug)] struct Left(i32);
 //! # #[derive(Debug)] struct Right(i32);
-//! # #[derive(Debug, Eq, PartialEq)]struct Answer(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
 //! #
 //! operator!(Left, Right: a - b -> Answer {
 //!     Answer(a.0 - b.0)
@@ -113,7 +113,7 @@
 //! # use operator_sugar::*;
 //! # #[derive(Debug)] struct Left(i32);
 //! # #[derive(Debug)] struct Right(i32);
-//! # #[derive(Debug, Eq, PartialEq)]struct Answer(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
 //! #
 //! operator!(Left, Right: a * b -> Answer {
 //!     Answer(a.0 * b.0)
@@ -129,7 +129,7 @@
 //! # use operator_sugar::*;
 //! # #[derive(Debug)] struct Left(i32);
 //! # #[derive(Debug)] struct Right(i32);
-//! # #[derive(Debug, Eq, PartialEq)]struct Answer(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
 //! #
 //! operator!(Left, Right: a / b -> Answer {
 //!     Answer(a.0 / b.0)
@@ -145,7 +145,7 @@
 //! # use operator_sugar::*;
 //! # #[derive(Debug)] struct Left(i32);
 //! # #[derive(Debug)] struct Right(i32);
-//! # #[derive(Debug, Eq, PartialEq)]struct Answer(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
 //! #
 //! operator!(Left, Right: a % b -> Answer {
 //!     Answer(a.0 % b.0)
@@ -153,6 +153,103 @@
 //!
 //! fn main() {
 //!     assert_eq!(Left(9) % Right(5), Answer(4));
+//! }
+//! ```
+//!
+//! ## Bitwise AND
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug)] struct Right(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//! #
+//! operator!(Left, Right: a & b -> Answer {
+//!     Answer(a.0 & b.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(Left(5) & Right(6), Answer(4));
+//! }
+//! ```
+//!
+//! ## Bitwise OR
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug)] struct Right(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//! #
+//! operator!(Left, Right: a | b -> Answer {
+//!     Answer(a.0 | b.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(Left(5) | Right(6), Answer(7));
+//! }
+//! ```
+//!
+//! ## Bitwise XOR
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug)] struct Right(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//! #
+//! operator!(Left, Right: a ^ b -> Answer {
+//!     Answer(a.0 ^ b.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(Left(5) ^ Right(6), Answer(3));
+//! }
+//! ```
+//!
+//! ## Shift-left
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug)] struct Right(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//! #
+//! operator!(Left, Right: a << b -> Answer {
+//!     Answer(a.0 << b.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(Left(5) << Right(3), Answer(40));
+//! }
+//! ```
+//!
+//! ## Shift-right
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug)] struct Right(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//! #
+//! operator!(Left, Right: a >> b -> Answer {
+//!     Answer(a.0 >> b.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(Left(43) >> Right(3), Answer(5));
+//! }
+//! ```
+//!
+//! ## Index
+//! ```
+//! # use operator_sugar::*;
+//! #[derive(Debug)] struct Left(Vec<i32>);
+//! #[derive(Debug)] struct Right(usize);
+//!
+//! operator!(Left, Right: a[b] -> &i32 {
+//!     // The & is required to remind developers that a reference is to be returned.
+//!     &a.0[b.0]
+//! });
+//!
+//! fn main() {
+//!     // We check for 6 not &6, because while the impl returns &6, the [] operator from Rust dereferences it.
+//!     assert_eq!(Left(vec![5, 6, 7])[Right(1)], 6);
 //! }
 //! ```
 
@@ -239,6 +336,108 @@ macro_rules! operator {
 
             $(#[$fn_attr])*
                 fn rem(self, $b: $B) -> Self::Output {
+                    let $a = self;
+                    $($body)*
+                }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty, $B:ty :
+        $(#[$fn_attr:meta])* $a:ident & $b:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::BitAnd<$B> for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+                fn bitand(self, $b: $B) -> Self::Output {
+                    let $a = self;
+                    $($body)*
+                }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty, $B:ty :
+        $(#[$fn_attr:meta])* $a:ident | $b:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::BitOr<$B> for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+                fn bitor(self, $b: $B) -> Self::Output {
+                    let $a = self;
+                    $($body)*
+                }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty, $B:ty :
+        $(#[$fn_attr:meta])* $a:ident ^ $b:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::BitXor<$B> for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+                fn bitxor(self, $b: $B) -> Self::Output {
+                    let $a = self;
+                    $($body)*
+                }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty, $B:ty :
+        $(#[$fn_attr:meta])* $a:ident << $b:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::Shl<$B> for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+                fn shl(self, $b: $B) -> Self::Output {
+                    let $a = self;
+                    $($body)*
+                }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty, $B:ty :
+        $(#[$fn_attr:meta])* $a:ident >> $b:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::Shr<$B> for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+                fn shr(self, $b: $B) -> Self::Output {
+                    let $a = self;
+                    $($body)*
+                }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty, $B:ty :
+        $(#[$fn_attr:meta])* $a:ident[$b:ident] -> & $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::Index<$B> for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+                fn index(&self, $b: $B) -> &Self::Output {
                     let $a = self;
                     $($body)*
                 }
