@@ -28,7 +28,18 @@
 //!     // Implementation of the operator function here
 //!     Answer(a.0 + b.0)
 //! });
+//! ```
 //!
+//! For unary operators:
+//!
+//! ```
+//! # use operator_sugar::*;
+//! struct Operand(i32);
+//! struct Answer(i32);
+//!
+//! operator!(Operand: -a -> Answer {
+//!     Answer(-a.0)
+//! });
 //! ```
 //!
 //! # Meta Attributes
@@ -252,6 +263,36 @@
 //!     assert_eq!(Left(vec![5, 6, 7])[Right(1)], 6);
 //! }
 //! ```
+//!
+//! ## Negative (`-`)
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//!
+//! operator!(Left: -a -> Answer {
+//!     Answer(-a.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(-Left(43), Answer(-43));
+//! }
+//! ```
+//!
+//! ## Not (`!`)
+//! ```
+//! # use operator_sugar::*;
+//! # #[derive(Debug)] struct Left(i32);
+//! # #[derive(Debug, Eq, PartialEq)] struct Answer(i32);
+//!
+//! operator!(Left: !a -> Answer {
+//!     Answer(!a.0)
+//! });
+//!
+//! fn main() {
+//!     assert_eq!(!Left(43), Answer(!43));
+//! }
+//! ```
 
 #![no_std]
 
@@ -441,6 +482,40 @@ macro_rules! operator {
                     let $a = self;
                     $($body)*
                 }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty :
+        $(#[$fn_attr:meta])* -$a:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::Neg for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+            fn neg(self) -> Self::Output {
+                let $a = self;
+                $($body)*
+            }
+        }
+    };
+
+    (
+        $(#[$impl_attr:meta])* $({ $($generics:tt)* })? $A:ty :
+        $(#[$fn_attr:meta])* !$a:ident -> $C:ty
+        { $($body:tt)* }
+    ) => {
+        $(#[$impl_attr])*
+        impl $(< $($generics)* >)? ::core::ops::Not for $A {
+            type Output = $C;
+
+            $(#[$fn_attr])*
+            fn not(self) -> Self::Output {
+                let $a = self;
+                $($body)*
+            }
         }
     };
 }
